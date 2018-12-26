@@ -6,13 +6,10 @@ import javax.swing.JButton
 import javax.swing.JFileChooser
 import javax.swing.JPanel
 import javax.swing.filechooser.FileNameExtensionFilter
-import javax.swing.filechooser.FileSystemView
 
 class MainPanel internal constructor() : JPanel() {
   private val solver = SudokuSolver(this::update)
-
   private var cells = EMPTY
-  private var task: SudokuSolver.Task? = null
 
   init {
     initComponents()
@@ -22,43 +19,58 @@ class MainPanel internal constructor() : JPanel() {
     layout = null
     preferredSize = Dimension(CELL_SIZE * SIZE, CELL_SIZE * SIZE + 100)
 
-    JButton("Chọn file input").apply {
-      setBounds(5, CELL_SIZE * SIZE + 30, 185, 50)
+    val buttonChooseFileWidth = 150
+    val buttonRunWidth = 100
+    val buttonNoDelayWidth = 100
+
+    val buttonHeight = 50
+    val buttonY = CELL_SIZE * SIZE + 30
+    val spaceBetweenButtons = 10
+    val buttonStartX =
+      (CELL_SIZE * SIZE - (buttonChooseFileWidth + spaceBetweenButtons + buttonNoDelayWidth + spaceBetweenButtons + buttonRunWidth)) / 2
+
+    JButton("Choose input file").apply {
+      setBounds(
+        buttonStartX,
+        buttonY,
+        buttonChooseFileWidth,
+        buttonHeight
+      )
       addActionListener {
-        val fileChooser = JFileChooser(FileSystemView.getFileSystemView().homeDirectory)
+        //val fileChooser = JFileChooser(FileSystemView.getFileSystemView().homeDirectory)
+        val fileChooser = JFileChooser("D:/Admin/Documents/Cpp/DoAnGTLT/DoAnGTLT")
         val filter = FileNameExtensionFilter("TEXT FILES", "txt", "text")
         fileChooser.fileFilter = filter
 
         if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+          solver.cancel()
           solver.input = fileChooser.selectedFile.absolutePath
-
-          if (task?.isCancelled == false) {
-            task?.cancel(true)
-          }
-
           update(EMPTY)
         }
       }
     }.let(::add)
 
     JButton("Run").apply {
-      setBounds(197, CELL_SIZE * SIZE + 30, 100, 50)
+      setBounds(
+        buttonStartX + buttonChooseFileWidth + spaceBetweenButtons,
+        buttonY,
+        buttonRunWidth,
+        buttonHeight
+      )
       addActionListener {
         update(EMPTY)
-        if (task != null && !task!!.isCancelled) {
-          task?.cancel(true)
-        }
-        task = solver.run()
+        solver.run()
       }
     }.let(::add)
 
-    JButton("Không delay").apply {
-      setBounds(300, CELL_SIZE * SIZE + 30, 140, 50)
-      addActionListener {
-        if (task?.isCancelled == false) {
-          task?.delayTime = 0L
-        }
-      }
+    JButton("No delay").apply {
+      setBounds(
+        buttonStartX + buttonChooseFileWidth + spaceBetweenButtons + buttonNoDelayWidth + spaceBetweenButtons,
+        CELL_SIZE * SIZE + 30,
+        buttonNoDelayWidth,
+        buttonHeight
+      )
+      addActionListener { solver.setDelayTime(0) }
     }.let(::add)
   }
 
@@ -80,7 +92,8 @@ class MainPanel internal constructor() : JPanel() {
           row = i,
           col = it,
           isCurrent = false,
-          number = 0
+          number = 0,
+          isBlankCell = false
         )
       }
     }
