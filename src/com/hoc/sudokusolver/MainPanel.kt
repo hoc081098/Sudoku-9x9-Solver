@@ -6,6 +6,7 @@ import javax.swing.JButton
 import javax.swing.JFileChooser
 import javax.swing.JPanel
 import javax.swing.filechooser.FileNameExtensionFilter
+import javax.swing.filechooser.FileSystemView
 
 class MainPanel internal constructor() : JPanel() {
   private val solver = SudokuSolver(this::update)
@@ -17,14 +18,14 @@ class MainPanel internal constructor() : JPanel() {
 
   private fun initComponents() {
     layout = null
-    preferredSize = Dimension(CELL_SIZE * SIZE, CELL_SIZE * SIZE + 100)
+    preferredSize = Dimension(CELL_SIZE * SIZE, CELL_SIZE * SIZE + 125)
 
     val buttonChooseFileWidth = 150
     val buttonRunWidth = 100
     val buttonNoDelayWidth = 100
 
     val buttonHeight = 50
-    val buttonY = CELL_SIZE * SIZE + 30
+    val buttonY = CELL_SIZE * SIZE + 10
     val spaceBetweenButtons = 10
     val buttonStartX =
       (CELL_SIZE * SIZE - (buttonChooseFileWidth + spaceBetweenButtons + buttonNoDelayWidth + spaceBetweenButtons + buttonRunWidth)) / 2
@@ -37,8 +38,7 @@ class MainPanel internal constructor() : JPanel() {
         buttonHeight
       )
       addActionListener {
-        //val fileChooser = JFileChooser(FileSystemView.getFileSystemView().homeDirectory)
-        val fileChooser = JFileChooser("D:/Admin/Documents/Cpp/DoAnGTLT/DoAnGTLT")
+        val fileChooser = JFileChooser(FileSystemView.getFileSystemView().homeDirectory)
         val filter = FileNameExtensionFilter("TEXT FILES", "txt", "text")
         fileChooser.fileFilter = filter
 
@@ -66,12 +66,21 @@ class MainPanel internal constructor() : JPanel() {
     JButton("No delay").apply {
       setBounds(
         buttonStartX + buttonChooseFileWidth + spaceBetweenButtons + buttonNoDelayWidth + spaceBetweenButtons,
-        CELL_SIZE * SIZE + 30,
+        buttonY,
         buttonNoDelayWidth,
         buttonHeight
       )
       addActionListener { solver.setDelayTime(0) }
     }.let(::add)
+
+    add(TextPanel().apply {
+      setBounds(
+        0,
+        buttonY + buttonHeight + 10,
+        CELL_SIZE * SIZE,
+        TextPanel.HEIGHT
+      )
+    })
   }
 
   private fun update(lists: List<List<SudokuCell>>) {

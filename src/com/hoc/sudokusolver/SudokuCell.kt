@@ -2,7 +2,6 @@ package com.hoc.sudokusolver
 
 import java.awt.*
 import java.awt.Color.DARK_GRAY
-import java.awt.Color.WHITE
 import java.awt.font.FontRenderContext
 import java.awt.geom.AffineTransform
 
@@ -23,6 +22,9 @@ data class SudokuCell(
 
   fun paint(g: Graphics) {
     (g as Graphics2D).run {
+      setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+      setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
+
       color = Color.BLACK
       fillRect(startX, startY, CELL_SIZE, CELL_SIZE)
 
